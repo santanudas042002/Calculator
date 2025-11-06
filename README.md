@@ -1,16 +1,25 @@
-# firstdemo
 
-A new Flutter project.
+Title
+Flutter Calculator (Beginner Friendly)
 
-## Getting Started
+Description
+A simple, clean Flutter calculator that supports addition, subtraction, multiplication, and division. The UI is styled with Material 3 theming, safe number parsing, a divide‑by‑zero guard, and a one‑tap clear action for a smooth experience.
 
-This project is a starting point for a Flutter application.
+Features
+- Two input fields with styled InputDecoration and helpful icons.
+- Result panel with bold typography and subtle background for focus.
+- Four operation buttons (+, −, ×, ÷) arranged in a responsive Wrap; FloatingActionButton extended for Clear.
+- Reusable widgets for inputs (CalculatorDisplay) and actions (_CalcFab) to keep code clean.
 
-A few resources to get you started if this is your first Flutter project:
+Project structure
+- lib/app/app.dart — MaterialApp + global Material 3 theme.
+- lib/view/home_view.dart — AppBar + SafeArea wrapper.
+- lib/view/calculator_view.dart — Calculator UI and business logic.
+- test/widget_test.dart — Basic widget test template (optional).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Getting started
+- flutter pub get  
+- flutter run
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Tech stack
+- Flutter 3.x, Dart, Material + Cupertino icons, Material 3 theming.

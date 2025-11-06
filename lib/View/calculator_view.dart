@@ -9,103 +9,82 @@ class CalculatorView extends StatefulWidget {
 }
 
 class _CalculatorViewState extends State<CalculatorView> {
-  int x = 0;
-  int y = 0;
-  num z = 0;
-
   final displayOneController = TextEditingController();
   final displayTwoController = TextEditingController();
+  num? result;
 
   @override
-  void initState() {
-    super.initState();
-    displayOneController.text = x.toString();
-    displayTwoController.text = y.toString();
+  void dispose() {
+    displayOneController.dispose();
+    displayTwoController.dispose();
+    super.dispose();
+  }
+
+  num _parse(String v) => num.tryParse(v.trim()) ?? 0;
+
+  void _compute(num Function(num a, num b) op) {
+    final a = _parse(displayOneController.text);
+    final b = _parse(displayTwoController.text);
+    setState(() => result = op(a, b));
   }
 
   @override
   Widget build(BuildContext context) {
+    final gap = const SizedBox(height: 12);
+
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           CalculatorDisplay(
-            hint: "Enter first number",
+            hint: 'Enter first number',
             controller: displayOneController,
           ),
-          SizedBox(height: 10),
+          gap,
           CalculatorDisplay(
-            hint: "Enter second number",
+            hint: 'Enter second number',
             controller: displayTwoController,
           ),
-          SizedBox(height: 10),
-
-          Text(
-            z.toString(),
-            style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+          gap,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              result == null ? 'Result will appear here' : '$result',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-
-          Spacer(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          const Spacer(),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
             children: [
-              FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    z =
-                        num.tryParse(displayOneController.text)! +
-                        num.tryParse(displayTwoController.text)!;
-                  });
-                },
-                child: Icon(CupertinoIcons.add),
-              ),
-
-              FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    z =
-                        num.tryParse(displayOneController.text)! -
-                        num.tryParse(displayTwoController.text)!;
-                  });
-                },
-                child: Icon(CupertinoIcons.minus),
-              ),
-
-              FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    z =
-                        num.tryParse(displayOneController.text)! *
-                        num.tryParse(displayTwoController.text)!;
-                  });
-                },
-                child: Icon(CupertinoIcons.multiply),
-              ),
-
-              FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    z =
-                        num.tryParse(displayOneController.text)! /
-                        num.tryParse(displayTwoController.text)!;
-                  });
-                },
-                child: Icon(CupertinoIcons.divide),
-              ),
+              _CalcFab(icon: CupertinoIcons.add, onTap: () => _compute((a, b) => a + b)),
+              _CalcFab(icon: CupertinoIcons.minus, onTap: () => _compute((a, b) => a - b)),
+              _CalcFab(icon: CupertinoIcons.multiply, onTap: () => _compute((a, b) => a * b)),
+              _CalcFab(icon: CupertinoIcons.divide, onTap: () => _compute((a, b) => b == 0 ? 0 : a / b)),
             ],
           ),
-          const SizedBox(height: 10),
-          FloatingActionButton.extended(
-            onPressed: () {
-              setState(() {
-                x = 0;
-                y = 0;
-                z = 0;
+          gap,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
                 displayOneController.clear();
                 displayTwoController.clear();
-              });
-            },
-            label: const Text("clear"),
+                setState(() => result = null);
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('Clear'),
+            ),
           ),
         ],
       ),
@@ -113,14 +92,29 @@ class _CalculatorViewState extends State<CalculatorView> {
   }
 }
 
+class _CalcFab extends StatelessWidget {
+  const _CalcFab({required this.icon, required this.onTap});
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      heroTag: icon.codePoint,
+      onPressed: onTap,
+      child: Icon(icon),
+    );
+  }
+}
+
 class CalculatorDisplay extends StatelessWidget {
   const CalculatorDisplay({
     super.key,
-    this.hint = "Enter a number",
+    this.hint = 'Enter a number',
     required this.controller,
   });
 
-  final String? hint;
+  final String hint;
   final TextEditingController controller;
 
   @override
@@ -128,18 +122,9 @@ class CalculatorDisplay extends StatelessWidget {
     return TextField(
       controller: controller,
       keyboardType: TextInputType.number,
-      autofocus: true,
       decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 3.0),
-          // BorderRadius must be on OutlineInputBorder and use Radius
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 3.0),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
         hintText: hint,
+        prefixIcon: const Icon(Icons.calculate_outlined),
       ),
     );
   }
